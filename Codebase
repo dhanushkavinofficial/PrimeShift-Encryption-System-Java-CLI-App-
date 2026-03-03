@@ -1,0 +1,80 @@
+import java.util.Scanner;
+
+public class PrimeShiftEncryption {
+
+    // Check if number is prime
+    public static boolean isPrime(int n) {
+        if (n <= 1) return false;
+        if (n <= 3) return true;
+
+        if (n % 2 == 0 || n % 3 == 0)
+            return false;
+
+        for (int i = 5; i * i <= n; i += 6) {
+            if (n % i == 0 || n % (i + 2) == 0)
+                return false;
+        }
+        return true;
+    }
+
+    // Get next prime after given number
+    public static int getNextPrime(int n) {
+        int candidate = n + 1;
+        while (!isPrime(candidate)) {
+            candidate++;
+        }
+        return candidate;
+    }
+
+    // Encrypt message
+    public static String encrypt(String message, int primeKey) {
+        int nextPrime = getNextPrime(primeKey);
+        StringBuilder encrypted = new StringBuilder();
+
+        for (char ch : message.toCharArray()) {
+            int ascii = (int) ch;
+            int encryptedAscii = (ascii + primeKey + nextPrime) % 256;
+            encrypted.append((char) encryptedAscii);
+        }
+
+        return encrypted.toString();
+    }
+
+    // Decrypt message
+    public static String decrypt(String encryptedMessage, int primeKey) {
+        int nextPrime = getNextPrime(primeKey);
+        StringBuilder decrypted = new StringBuilder();
+
+        for (char ch : encryptedMessage.toCharArray()) {
+            int ascii = (int) ch;
+            int decryptedAscii = (ascii - primeKey - nextPrime + 256) % 256;
+            decrypted.append((char) decryptedAscii);
+        }
+
+        return decrypted.toString();
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("🔐 PrimeShift Encryption System");
+        System.out.print("Enter message: ");
+        String message = scanner.nextLine();
+
+        System.out.print("Enter prime key: ");
+        int primeKey = scanner.nextInt();
+
+        if (!isPrime(primeKey)) {
+            System.out.println("❌ Key is not prime. Please use a prime number.");
+            return;
+        }
+
+        String encrypted = encrypt(message, primeKey);
+        String decrypted = decrypt(encrypted, primeKey);
+
+        System.out.println("\nEncrypted Message: " + encrypted);
+        System.out.println("Decrypted Message: " + decrypted);
+
+        scanner.close();
+    }
+}
